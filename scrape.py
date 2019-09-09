@@ -1,6 +1,3 @@
-I 
-
-from flask import Flask, render_template
 from bs4 import BeautifulSoup as bs
 import requests
 from splinter import Browser
@@ -91,7 +88,6 @@ def mars_table():
     db.latest_news.insert_one(mars_fact_table)
     
     return()
-
 
 
 
