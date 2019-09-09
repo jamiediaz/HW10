@@ -1,4 +1,4 @@
-
+I 
 
 from flask import Flask, render_template
 from bs4 import BeautifulSoup as bs
@@ -43,7 +43,9 @@ def new_news():
         print("\nScraping Complete")
 
     latest_news = {'title': news_title[0], 'news_teaser': news_p[0] }
-    return(latest_news)
+    db.latest_news.insert_one(latest_news)
+    
+    return()
     
 
 
@@ -58,7 +60,9 @@ def featured_img():
     big_picture = big_picture.replace("'","").replace("'","")
     img_url = "https://jpl.nasa.gov" + big_picture
     featured_url = {'featured_img': img_url}
-    return(featured_url)
+    db.latest_news.insert_one(featured_url)
+    
+    return()
 
 
 
@@ -70,7 +74,9 @@ def weather_tweet():
 
     mars_weather = soup.find_all("p", class_="tweet-text")[3].get_text("InSight sol")
     mars_tweet = {'latest_weather': mars_weather}
-    return(mars_tweet)
+    db.latest_news.insert_one(mars_tweet)
+    
+    return()
 
 
 
@@ -82,7 +88,9 @@ def mars_table():
     mars_facts_df = pd.DataFrame(mars_facts[0])
     mars_html = mars_facts_df.to_html()
     mars_fact_table = {'facts_table':mars_html}
-    return(mars_fact_table)
+    db.latest_news.insert_one(mars_fact_table)
+    
+    return()
 
 
 
@@ -104,7 +112,6 @@ def mars_dictio():
     for value in name:
         title.append(name[x].text)
         x+=1
-
 
     image_url = []
     x = 0
@@ -128,10 +135,10 @@ def mars_dictio():
     return()
 
 
-db.latest_news.insert_one(new_news())
-db.featured_img.insert_one(featured_img())
-db.latest_weather.insert_one(weather_tweet())
-db.mars_table.insert_one(mars_table())
+new_news()
+featured_img()
+weather_tweet()
+mars_table()
 mars_dictio()
 
 
