@@ -1,3 +1,5 @@
+
+
 from flask import Flask, render_template
 from bs4 import BeautifulSoup as bs
 import requests
@@ -5,9 +7,13 @@ from splinter import Browser
 import time
 import pandas as pd
 import numpy as np
+import pymongo
 
+conn = 'mongodb://localhost:27017'
+client = pymongo.MongoClient(conn)
 
-
+db = client.mars_db
+collection = db.items
 
 executable_path = {'executable_path': 'C:/Users/jamie/Documents/chromedriver.exe'}
 browser = Browser('chrome', **executable_path, headless=False)
@@ -21,7 +27,7 @@ def new_news():
     soup = bs(html, 'html.parser')
 
     articles = soup.find_all('div', class_='image_and_description_container')
-    time.sleep(5)
+    time.sleep(10)
     
     news_title=[]
     news_p=[]
@@ -36,12 +42,12 @@ def new_news():
     except:
         print("\nScraping Complete")
 
-    latest_news = [news_title[0],news_p[0]]
+    latest_news = {'title': news_title[0], 'news_teaser': news_p[0] }
     return(latest_news)
     
 
 
-def fetured_img():
+def featured_img():
     url = 'https://www.jpl.nasa.gov/spaceimages/?search=&category=Mars'
     browser.visit(url)
     html = browser.html
@@ -50,7 +56,8 @@ def fetured_img():
     big_picture = soup.find("article", class_="carousel_item")['style']
     big_picture = big_picture.replace('background-image: url(', '').replace(');', '')
     big_picture = big_picture.replace("'","").replace("'","")
-    featured_url = "https://jpl.nasa.gov" + big_picture
+    img_url = "https://jpl.nasa.gov" + big_picture
+    featured_url = {'featured_img': img_url}
     return(featured_url)
 
 
@@ -61,9 +68,9 @@ def weather_tweet():
     html = browser.html
     soup = bs(html, 'html.parser')
 
-    mars_weather = soup.find_all("p", class_="tweet-text")[1].get_text("InSight sol")
-
-    return(mars_weather)
+    mars_weather = soup.find_all("p", class_="tweet-text")[3].get_text("InSight sol")
+    mars_tweet = {'latest_weather': mars_weather}
+    return(mars_tweet)
 
 
 
@@ -74,7 +81,8 @@ def mars_table():
     mars_facts = pd.read_html(str(table))
     mars_facts_df = pd.DataFrame(mars_facts[0])
     mars_html = mars_facts_df.to_html()
-    return(mars_html)
+    mars_fact_table = {'facts_table':mars_html}
+    return(mars_fact_table)
 
 
 
@@ -100,8 +108,8 @@ def mars_dictio():
 
     image_url = []
     x = 0
-    for value in titles:
-        browser.click_link_by_partial_text(f'{titles[x]}')
+    for value in title:
+        browser.click_link_by_partial_text(f'{title[x]}')
         html = browser.html
         soup = bs(html, 'html.parser')
         time.sleep(3)
@@ -110,6 +118,22 @@ def mars_dictio():
         browser.visit(url)
         time.sleep(5)
         x+=1
+    
+    x = 0
+    for  i in title:
+        hemisphere_image_urls = {'title': title[x], 'image_url': image_url[x]}
+        db.hemisphere_img.insert_one(hemisphere_image_urls)
+        x+=1
 
-    hemisphere_image_urls = [ {'title': title[i], 'image_url': image_url[i] } for i in range(len(title)) ]
-    return(hemisphere_image_urls)
+    return()
+
+
+db.latest_news.insert_one(new_news())
+db.featured_img.insert_one(featured_img())
+db.latest_weather.insert_one(weather_tweet())
+db.mars_table.insert_one(mars_table())
+mars_dictio()
+
+
+
+
