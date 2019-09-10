@@ -11,10 +11,10 @@ mongo = PyMongo(app, uri="mongodb://localhost:27017/mars_db")
 def index():
 
     # Find one record of data from the mongo database
-    news = mongo.db.latest_news.find()
+    news = mongo.db.latest_news.find_one({},{"title":1})
 
     # Return template and data
-    return render_template("index.html", message="test this!");
+    return render_template("index.html", news=news)
 # def echo():
 #     return render_template("index.html", text="Serving up cool text from the Flask server!!")
 
