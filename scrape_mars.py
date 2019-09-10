@@ -124,7 +124,7 @@ def mars_dictio():
     
     x = 0
     for  i in title:
-        hemisphere_image_urls = {'title': title[x], 'image_url': image_url[x]}
+        hemisphere_image_urls = {f"id_{x}":{'title': title[x], 'image_url': image_url[x]}}
         db.hemisphere_img.insert_one(hemisphere_image_urls)
         x+=1
 
@@ -132,14 +132,15 @@ def mars_dictio():
 
 
 
-def scrape:
+def scrape():
     new_news()
     featured_img()
     weather_tweet()
     mars_table()
     mars_dictio()
     return()
-
+    
+# scrape()
 
 
 
