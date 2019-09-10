@@ -42,7 +42,7 @@ def new_news():
     latest_news = {'title': news_title[0], 'news_teaser': news_p[0] }
     db.latest_news.insert_one(latest_news)
     
-    return()
+    return
     
 
 
@@ -57,9 +57,9 @@ def featured_img():
     big_picture = big_picture.replace("'","").replace("'","")
     img_url = "https://jpl.nasa.gov" + big_picture
     featured_url = {'featured_img': img_url}
-    db.latest_news.insert_one(featured_url)
+    db.featured_img.insert_one(featured_url)
     
-    return()
+    return
 
 
 
@@ -71,9 +71,9 @@ def weather_tweet():
 
     mars_weather = soup.find_all("p", class_="tweet-text")[3].get_text("InSight sol")
     mars_tweet = {'latest_weather': mars_weather}
-    db.latest_news.insert_one(mars_tweet)
+    db.latest_weather.insert_one(mars_tweet)
     
-    return()
+    return
 
 
 
@@ -85,9 +85,9 @@ def mars_table():
     mars_facts_df = pd.DataFrame(mars_facts[0])
     mars_html = mars_facts_df.to_html()
     mars_fact_table = {'facts_table':mars_html}
-    db.latest_news.insert_one(mars_fact_table)
+    db.mars_facts.insert_one(mars_fact_table)
     
-    return()
+    return
 
 
 
@@ -125,22 +125,23 @@ def mars_dictio():
     x = 0
     for  i in title:
         hemisphere_image_urls = {f"id_{x}":{'title': title[x], 'image_url': image_url[x]}}
-        db.hemisphere_img.insert_one(hemisphere_image_urls)
+        db.hemisphere_img.insert_one(hemisphere_image_urls) 
         x+=1
 
-    return()
+
+    return 
 
 
 
-def scrape():
+def scrape_to_db():
     new_news()
     featured_img()
     weather_tweet()
     mars_table()
     mars_dictio()
-    return()
+    return
     
-# scrape()
+
 
 
 
